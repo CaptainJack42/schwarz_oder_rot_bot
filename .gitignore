@@ -1,3 +1,6 @@
+# Script for the API key
+export_api_token.sh
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
