@@ -1,3 +1,3 @@
 #!/bin/bash
 
-export DISCORD_API_TOKEN="<insert_api_key_here>"
+export DISCORD_API_TOKEN="OTM0NDE5MzQ4MDcwNzM1OTAy.Yevz1Q.Ne44IkTPGg-KuDkvMjWyFTLJYWE"
