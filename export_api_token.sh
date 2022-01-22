@@ -1,3 +1,0 @@
-#!/bin/bash
-
-export DISCORD_API_TOKEN="OTM0NDE5MzQ4MDcwNzM1OTAy.Yevz1Q.Ne44IkTPGg-KuDkvMjWyFTLJYWE"
