@@ -171,7 +171,7 @@ class SoRGame:
 
             card: card_deck.Card = self.deck.draw_card()
 
-            msg = f'{player.mention} \ndeine Karte ist die **{self.deck.CARD_VALUE_MAP.get(card.value)} of :{card.color._name_.lower()}:**.'
+            msg = f'{player.mention} \ndeine Karte ist die **{self.deck.CARD_VALUE_MAP.get(card.value)}:{card.color._name_.lower()}: ({self.deck.CARD_VALUE_MAP.get(card.value)} of {card.color._name_})**.'
 
             if await self.parse_phase_1(card, reaction):
                 msg += '\nDas ist **richtig!** Wähle jemanden aus der trinkt!'
@@ -195,7 +195,7 @@ class SoRGame:
 
     async def phase_2(self):
         for (idx, player) in enumerate(self.players):
-            msg = f'{player.mention} \n{self.MESSAGES_MAP.get(1)} \ndeine vorherige Karte war: **{card_deck.CardDeck.CARD_VALUE_MAP.get(self.player_cards[idx][0].value)} of :{self.player_cards[idx][0].color._name_.lower()}:**'
+            msg = f'{player.mention} \n{self.MESSAGES_MAP.get(1)} \ndeine vorherige Karte war: **{card_deck.CardDeck.CARD_VALUE_MAP.get(self.player_cards[idx][0].value)}:{self.player_cards[idx][0].color._name_.lower()} ({self.deck.CARD_VALUE_MAP.get(self.player_cards[idx][0].value)} of {self.player_cards[idx][0].color._name_}):**'
             reaction = await self.client.send_msg_and_await_reaction(msg, player, self.REACTION_MAP.get(1))
             if reaction == None:
                 continue
@@ -205,7 +205,7 @@ class SoRGame:
 
             card: card_deck.Card = self.deck.draw_card()
 
-            msg = f'{player.mention} \ndeine Karte ist die **{self.deck.CARD_VALUE_MAP.get(card.value)} of :{card.color._name_.lower()}:**.'
+            msg = f'{player.mention} \ndeine Karte ist die **{self.deck.CARD_VALUE_MAP.get(card.value)}:{card.color._name_.lower()}: ({self.deck.CARD_VALUE_MAP.get(card.value)} of {card.color._name_})**.'
 
             if await self.parse_phase_2(card, self.player_cards[idx], reaction):
                 msg += '\nDas ist **richtig!** Wähle jemanden aus der trinkt!'
@@ -236,7 +236,7 @@ class SoRGame:
         for (idx, player) in enumerate(self.players):
             msg = f'{player.mention} \n{self.MESSAGES_MAP.get(2)} \ndeine vorherigen Karten waren:'
             for c in self.player_cards[idx]:
-                msg += f'\n- **{card_deck.CardDeck.CARD_VALUE_MAP.get(c.value)} of :{c.color._name_.lower()}:**'
+                msg += f'\n- **{card_deck.CardDeck.CARD_VALUE_MAP.get(c.value)}:{c.color._name_.lower()}: ({self.deck.CARD_VALUE_MAP.get(c.value)} of {c.color._name_})**'
             reaction = await self.client.send_msg_and_await_reaction(msg, player, self.REACTION_MAP.get(2))
             if reaction == None:
                 continue
@@ -246,7 +246,7 @@ class SoRGame:
 
             card: card_deck.Card = self.deck.draw_card()
 
-            msg = f'{player.mention} \ndeine Karte ist die **{self.deck.CARD_VALUE_MAP.get(card.value)} of :{card.color._name_.lower()}:**.'
+            msg = f'{player.mention} \ndeine Karte ist die **{self.deck.CARD_VALUE_MAP.get(card.value)}:{card.color._name_.lower()}: ({self.deck.CARD_VALUE_MAP.get(card.value)} of {card.color._name_})**.'
 
             if await self.parse_phase_3(card, self.player_cards[idx], reaction):
                 msg += '\nDas ist **richtig!** Wähle jemanden aus der trinkt!'
@@ -277,7 +277,7 @@ class SoRGame:
         for (idx, player) in enumerate(self.players):
             msg = f'{player.mention} \n{self.MESSAGES_MAP.get(3)} \ndeine vorherigen Karten waren:'
             for c in self.player_cards[idx]:
-                msg += f'\n- **{card_deck.CardDeck.CARD_VALUE_MAP.get(c.value)} of :{c.color._name_.lower()}:**'
+                msg += f'\n- **{card_deck.CardDeck.CARD_VALUE_MAP.get(c.value)}:{c.color._name_.lower()}: ({self.deck.CARD_VALUE_MAP.get(c.value)} of {c.color._name_})**'
             reaction = await self.client.send_msg_and_await_reaction(msg, player, self.REACTION_MAP.get(3))
             if reaction == None:
                 continue
@@ -287,8 +287,8 @@ class SoRGame:
 
             card: card_deck.Card = self.deck.draw_card()
 
-            msg = f'{player.mention} \ndeine Karte ist die **{self.deck.CARD_VALUE_MAP.get(card.value)} of :{card.color._name_.lower()}:**.'
-
+            msg = f'{player.mention} \ndeine Karte ist die **{self.deck.CARD_VALUE_MAP.get(card.value)}:{card.color._name_.lower()}: ({self.deck.CARD_VALUE_MAP.get(card.value)} of {card.color._name_})**.'
+            
             if await self.parse_phase_4(card, self.player_cards[idx], reaction):
                 msg += '\nDas ist **richtig!** Wähle jemanden aus der trinkt!'
             else:
