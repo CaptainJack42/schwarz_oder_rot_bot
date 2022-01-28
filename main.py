@@ -26,6 +26,7 @@ class SoRMainClient(commands.Bot):
                                             'schwarz', 'rot', 'schwarzoderrot', 'schwarz oder rot', 'new', 'neu'], pass_context=True)(self.create_game)
         self.start_sor_game = self.command(
             name='start', aliases=['go', 'play'], pass_context=True)(self.start_game)
+        self.stop_sor_game = self.command(name='stop', pass_context=True)(self.stop_game)
 
     async def on_ready(self):
         guilds = discord.utils.get(self.guilds)
@@ -34,22 +35,37 @@ class SoRMainClient(commands.Bot):
         )
 
     async def create_game(self, ctx: commands.Context):
+        if self.game is not None:
+            await ctx.send("Finish the existing game first or cancel it with `!stop`")
+            return
         message: discord.Message = await ctx.send(f'{ctx.author.mention} will Schwarz oder Rot spielen, @everyone macht mit indem ihr auf :beers: klickt!')
         await message.add_reaction('🍻')
+        self.logger.info(f'{ctx.author} created a game')
         self.game = SoRGame(self, self.logger)
         self.init_msg_id = message.id
         self.game_channel = ctx
 
     async def start_game(self, ctx: commands.Context):
-        self.logger.debug(f'{ctx.author} tried to start the game')
+        if self.game == None:
+            await ctx.send('You need to create a game with `!sor` first.')
+            return
         if len(self.game.players) <= 0:
             await ctx.send(f'Nicht genug Mitspieler... @everyone macht mit! :beers: :beers: :beers:')
             return
+        self.logger.info(f'{ctx.author} started the game')
         self.init_msg_id = None
         await self.game.run()
+        self.game = None
+        
+    async def stop_game(self, ctx: commands.Context = None):
+        self.game = None
+        if ctx == None:
+            self.logger.info('Game ended by timeout of all players')
+        else:
+            self.logger.info(f'{ctx.author} ended the game')
 
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
-        if payload.message_id != self.init_msg_id and self.init_msg_id != None:
+        if payload.message_id != self.init_msg_id or self.init_msg_id == None:
             return
         if payload.user_id == self.user.id:
             return
@@ -99,10 +115,10 @@ class SoRMainClient(commands.Bot):
 
 class SoRGame:
     MESSAGES_MAP: dict = {
-        0: 'Schwarz oder Rot?',
-        1: 'Höher, Tiefer oder Gleich?',
-        2: 'Innerhalb oder Außerhalb? \n ✅ : innerhalb \n ❌ : außerhalb \n 🌗 : gleich',
-        3: 'Hast du oder hast du nicht? \n ✅ : hab ich \n ❌ : hab ich nicht',
+        0: '**Schwarz oder Rot?**',
+        1: '**Höher, Tiefer oder Gleich?**',
+        2: '**Innerhalb oder Außerhalb?** \n ✅ : innerhalb \n ❌ : außerhalb \n 🌗 : gleich',
+        3: '**Hast du oder hast du nicht?** \n ✅ : hab ich \n ❌ : hab ich nicht',
     }
 
     REACTION_MAP: dict = {
@@ -130,6 +146,8 @@ class SoRGame:
             idx = self.players.index(player)
             self.player_cards.remove(self.player_cards[idx])
             self.players.remove(player)
+        if len(self.players) <= 0:
+            await self.client.stop_game()
 
     async def run(self):
         await self.phase_1()
@@ -149,12 +167,12 @@ class SoRGame:
 
             card: card_deck.Card = self.deck.draw_card()
 
-            msg = f'{player.mention} deine Karte ist die {self.deck.CARD_VALUE_MAP.get(card.value)} of {card.color._name_}.'
+            msg = f'{player.mention} deine Karte ist die **{self.deck.CARD_VALUE_MAP.get(card.value)} of {card.color._name_}**.'
 
             if await self.parse_phase_1(card, reaction):
-                msg += '\n Das ist richtig! Wähle jemanden aus der trinkt!'
+                msg += '\n Das ist **richtig!** Wähle jemanden aus der trinkt!'
             else:
-                msg += '\n Das ist falsch! Trink!'
+                msg += '\n Das ist **falsch!** Trink!'
 
             self.player_cards[idx].append(card)
             await self.client.send_msg(msg)
@@ -182,12 +200,13 @@ class SoRGame:
                 f'{player.name} reacted with {reaction} to höher oder tiefer. This is viable: ({str(reaction) in self.REACTION_MAP.get(1)})')
 
             card: card_deck.Card = self.deck.draw_card()
-            msg = f'{player.mention} deine Karte ist die {self.deck.CARD_VALUE_MAP.get(card.value)} of {card.color._name_}.'
+
+            msg = f'{player.mention} deine Karte ist die **{self.deck.CARD_VALUE_MAP.get(card.value)} of {card.color._name_}**.'
 
             if await self.parse_phase_2(card, self.player_cards[idx], reaction):
-                msg += '\n Das ist richtig! Wähle jemanden aus der trinkt!'
+                msg += '\n Das ist **richtig!** Wähle jemanden aus der trinkt!'
             else:
-                msg += '\n Das ist falsch! Trink!'
+                msg += '\n Das ist **falsch!** Trink!'
 
             self.player_cards[idx].append(card)
             await self.client.send_msg(msg)
@@ -222,12 +241,13 @@ class SoRGame:
                 f'{player.name} reacted with {reaction} to innerhalb oder außerhalb. This is viable: ({str(reaction) in self.REACTION_MAP.get(2)})')
 
             card: card_deck.Card = self.deck.draw_card()
-            msg = f'{player.mention} deine Karte ist die {self.deck.CARD_VALUE_MAP.get(card.value)} of {card.color._name_}.'
+
+            msg = f'{player.mention} deine Karte ist die **{self.deck.CARD_VALUE_MAP.get(card.value)} of {card.color._name_}**.'
             
             if await self.parse_phase_3(card, self.player_cards[idx], reaction):
-                msg += '\n Das ist richtig! Wähle jemanden aus der trinkt!'
+                msg += '\n Das ist **richtig!** Wähle jemanden aus der trinkt!'
             else:
-                msg += '\n Das ist falsch! Trink!'
+                msg += '\n Das ist **falsch!** Trink!'
 
             self.player_cards[idx].append(card)
             await self.client.send_msg(msg)
@@ -262,12 +282,13 @@ class SoRGame:
                 f'{player.name} reacted with {reaction} to haschisch oder nischt haschisch. This is viable: ({str(reaction) in self.REACTION_MAP.get(3)})')
 
             card: card_deck.Card = self.deck.draw_card()
-            msg = f'{player.mention} deine Karte ist die {self.deck.CARD_VALUE_MAP.get(card.value)} of {card.color._name_}.'
+
+            msg = f'{player.mention} deine Karte ist die **{self.deck.CARD_VALUE_MAP.get(card.value)} of {card.color._name_}**.'
             
             if await self.parse_phase_4(card, self.player_cards[idx], reaction):
-                msg += '\n Das ist richtig! Wähle jemanden aus der trinkt!'
+                msg += '\n Das ist **richtig!** Wähle jemanden aus der trinkt!'
             else:
-                msg += '\n Das ist falsch! Trink!'
+                msg += '\n Das ist **falsch!** Trink!'
 
             self.player_cards[idx].append(card)
             await self.client.send_msg(msg)
