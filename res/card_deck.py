@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import IntEnum
 from random import randint
 
@@ -9,10 +9,15 @@ class CardColor(IntEnum):
     SPADES = 2
     CLUBS = 3
 
-@dataclass
+@dataclass(order=True)
 class Card:
+    sort_index: int = field(init=False, repr=False)
+    
     color: CardColor
     value: int
+    
+    def __post_init__(self):
+        self.sort_index = self.value
 
 
 class CardDeck:

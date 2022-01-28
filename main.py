@@ -6,7 +6,7 @@ import asyncio
 from discord.ext import commands
 from dotenv import load_dotenv
 import logging
-import ressource.card_deck as card_deck
+import res.card_deck as card_deck
 
 load_dotenv()
 API_TOKEN = os.environ.get('API_TOKEN')
@@ -138,26 +138,27 @@ class SoRGame:
         await self.phase_4()
 
     async def phase_1(self):
-        for player in self.players:
+        for (idx, player) in enumerate(self.players):
             msg = f'{player.mention} \n {self.MESSAGES_MAP.get(0)}'
             reaction = await self.client.send_msg_and_await_reaction(msg, player, self.REACTION_MAP.get(0))
             if reaction == None:
                 continue
-            
+
             self.logger.debug(
                 f'{player.name} reacted with {reaction} to Schwarz oder Rot. This is viable: ({str(reaction) in self.REACTION_MAP.get(0)})')
-            
+
             card: card_deck.Card = self.deck.draw_card()
-            
+
             msg = f'{player.mention} deine Karte ist die {self.deck.CARD_VALUE_MAP.get(card.value)} of {card.color._name_}.'
-            
+
             if await self.parse_phase_1(card, reaction):
                 msg += '\n Das ist richtig! Wähle jemanden aus der trinkt!'
             else:
                 msg += '\n Das ist falsch! Trink!'
-                
+
+            self.player_cards[idx].append(card)
             await self.client.send_msg(msg)
-            
+
     async def parse_phase_1(self, card: card_deck.Card, reaction: str) -> bool:
         if reaction == '⚫':
             if card.color == card_deck.CardColor.SPADES or card.color == card_deck.CardColor.CLUBS:
@@ -172,20 +173,116 @@ class SoRGame:
 
     async def phase_2(self):
         for (idx, player) in enumerate(self.players):
-            msg = f'{player.mention} \n {self.MESSAGES_MAP.get(1)}'
+            msg = f'{player.mention} \n {self.MESSAGES_MAP.get(1)} \n deine vorherige Karte war: {card_deck.CardDeck.CARD_VALUE_MAP.get(self.player_cards[idx][0].value)} of {self.player_cards[idx][0].color._name_}'
             reaction = await self.client.send_msg_and_await_reaction(msg, player, self.REACTION_MAP.get(1))
             if reaction == None:
                 continue
-            
+
             self.logger.debug(
-            f'{player.name} reacted with {reaction} to Schwarz oder Rot. This is viable: ({str(reaction) in self.REACTION_MAP.get(0)})')
+                f'{player.name} reacted with {reaction} to höher oder tiefer. This is viable: ({str(reaction) in self.REACTION_MAP.get(1)})')
+
+            card: card_deck.Card = self.deck.draw_card()
+            msg = f'{player.mention} deine Karte ist die {self.deck.CARD_VALUE_MAP.get(card.value)} of {card.color._name_}.'
+
+            if await self.parse_phase_2(card, self.player_cards[idx], reaction):
+                msg += '\n Das ist richtig! Wähle jemanden aus der trinkt!'
+            else:
+                msg += '\n Das ist falsch! Trink!'
+
+            self.player_cards[idx].append(card)
+            await self.client.send_msg(msg)
+
+    async def parse_phase_2(self, card: card_deck.Card, prev_cards: list[card_deck.Card], reaction: str) -> bool:
+        if reaction == '⏫':
+            if card.value > prev_cards[0].value:
+                return True
+            else:
+                return False
+        elif reaction == '⏬':
+            if card.value < prev_cards[0].value:
+                return True
+            else:
+                return False
+        elif reaction == '🌗':
+            if card.value == prev_cards[0].value:
+                return True
+            else:
+                return False
 
     async def phase_3(self):
-        pass
+        for (idx, player) in enumerate(self.players):
+            msg = f'{player.mention} \n {self.MESSAGES_MAP.get(2)} \n deine vorherigen Karten waren:'
+            for c in self.player_cards[idx]:
+                msg += f'\n - {card_deck.CardDeck.CARD_VALUE_MAP.get(c.value)} of {c.color._name_}'
+            reaction = await self.client.send_msg_and_await_reaction(msg, player, self.REACTION_MAP.get(2))
+            if reaction == None:
+                continue
+
+            self.logger.debug(
+                f'{player.name} reacted with {reaction} to innerhalb oder außerhalb. This is viable: ({str(reaction) in self.REACTION_MAP.get(2)})')
+
+            card: card_deck.Card = self.deck.draw_card()
+            msg = f'{player.mention} deine Karte ist die {self.deck.CARD_VALUE_MAP.get(card.value)} of {card.color._name_}.'
+            
+            if await self.parse_phase_3(card, self.player_cards[idx], reaction):
+                msg += '\n Das ist richtig! Wähle jemanden aus der trinkt!'
+            else:
+                msg += '\n Das ist falsch! Trink!'
+
+            self.player_cards[idx].append(card)
+            await self.client.send_msg(msg)
+
+    async def parse_phase_3(self, card: card_deck.Card, prev_cards: list[card_deck.Card], reaction: str) -> bool:
+        if reaction == '✅':
+            if card.value > min(prev_cards[0:]).value and card.value < max(prev_cards[0:]).value:
+                return True
+            else:
+                return False
+        if reaction == '❌':
+            if card.value < min(prev_cards[0:]).value or card.value > max(prev_cards[0:]).value:
+                return True
+            else:
+                return False
+        if reaction == '🌗':
+            for c in prev_cards:
+                if card.value == c.value:
+                    return True
+            return False
 
     async def phase_4(self):
-        pass
+        for (idx, player) in enumerate(self.players):
+            msg = f'{player.mention} \n {self.MESSAGES_MAP.get(3)} \n deine vorherigen Karten waren:'
+            for c in self.player_cards[idx]:
+                msg += f'\n - {card_deck.CardDeck.CARD_VALUE_MAP.get(c.value)} of {c.color._name_}'
+            reaction = await self.client.send_msg_and_await_reaction(msg, player, self.REACTION_MAP.get(3))
+            if reaction == None:
+                continue
 
+            self.logger.debug(
+                f'{player.name} reacted with {reaction} to haschisch oder nischt haschisch. This is viable: ({str(reaction) in self.REACTION_MAP.get(3)})')
+
+            card: card_deck.Card = self.deck.draw_card()
+            msg = f'{player.mention} deine Karte ist die {self.deck.CARD_VALUE_MAP.get(card.value)} of {card.color._name_}.'
+            
+            if await self.parse_phase_4(card, self.player_cards[idx], reaction):
+                msg += '\n Das ist richtig! Wähle jemanden aus der trinkt!'
+            else:
+                msg += '\n Das ist falsch! Trink!'
+
+            self.player_cards[idx].append(card)
+            await self.client.send_msg(msg)
+            
+    async def parse_phase_4(self, card: card_deck.Card, prev_cards: list[card_deck.Card], reaction: str) -> bool:
+        if reaction == '✅':
+            for c in prev_cards:
+                if card.color == c.color:
+                    return True
+            return False
+        elif reaction == '❌':
+            for c in prev_cards:
+                if card.color == c.color:
+                    return False
+            return True
 
 if __name__ == '__main__':
     bot = SoRMainClient(command_prefix='!', description='!SchwarzOderRot')
