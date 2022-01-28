@@ -62,10 +62,10 @@ class SoRMainClient(commands.Bot):
         self.game = None
         if ctx == None:
             self.logger.info('Game ended by timeout of all players')
-            await self.game_channel.send('Game ended by timeout of all players')
+            await self.game_channel.send('Das Spiel wurde beended weil alle Spieler nicht reagiert haben.')
         else:
             self.logger.info(f'{ctx.author} ended the game')
-            await ctx.send(f'{ctx.author.mention} ended the game')
+            await ctx.send(f'{ctx.author.mention} hat das Spiel beendet')
 
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
         if payload.message_id != self.init_msg_id or self.init_msg_id == None:
