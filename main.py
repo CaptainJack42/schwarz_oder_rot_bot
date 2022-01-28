@@ -1,5 +1,5 @@
-from ast import alias
-from enum import IntEnum
+#! /usr/bin/env python3.10
+
 import os
 import discord
 import asyncio
@@ -119,9 +119,9 @@ class SoRMainClient(commands.Bot):
 class SoRGame:
     MESSAGES_MAP: dict = {
         0: '**Schwarz oder Rot?**',
-        1: '**Höher, Tiefer oder Gleich?**',
-        2: '**Innerhalb oder Außerhalb?** \n ✅ : innerhalb \n ❌ : außerhalb \n 🌗 : gleich',
-        3: '**Hast du oder hast du nicht?** \n ✅ : hab ich \n ❌ : hab ich nicht',
+        1: '**Höher, Tiefer oder Gleich als die erste Karte?**',
+        2: '**Innerhalb oder Außerhalb der ersten beiden Karten?** \n ✅ : innerhalb \n ❌ : außerhalb \n 🌗 : gleich',
+        3: '**Hast du die Farbe bereits oder hast du sie nicht?** \n ✅ : hab ich \n ❌ : hab ich nicht',
     }
 
     REACTION_MAP: dict = {
