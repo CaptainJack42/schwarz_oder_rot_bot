@@ -9,13 +9,13 @@ class CardColor(IntEnum):
     SPADES = 2
     CLUBS = 3
 
-
-class Card(dataclass):
+@dataclass
+class Card:
     color: CardColor
     value: int
 
 
-class CardDeck():
+class CardDeck:
     CARD_VALUE_MAP: dict = {
         2: '2',
         3: '3',
@@ -33,11 +33,24 @@ class CardDeck():
     }
 
     def __init__(self) -> None:
-        self.deck: list[Card]
+        self.__deck: list[Card] = list()
         for color in CardColor:
-            for (key, _) in self.CARD_VALUE_MAP:
-                self.deck.append(Card(color, key))
+            for key in self.CARD_VALUE_MAP.keys():
+                self.__deck.append(Card(color, key))
 
     def draw_card(self) -> Card:
-        rand: int = randint(0, len(self.deck) - 1)
-        return self.deck.pop(rand)
+        if len(self.__deck) == 0:
+            return None
+        rand: int = randint(0, len(self.__deck) - 1)
+        return self.__deck.pop(rand)
+    
+
+if __name__ == '__main__':
+    deck = CardDeck()
+    card: Card = deck.draw_card()
+    num_drawn: int = 0  # 0 because the last drawn card (None) is also counted
+    while card != None:
+        print(f"drew {deck.CARD_VALUE_MAP.get(card.value)} of {card.color._name_}")
+        card = deck.draw_card()
+        num_drawn += 1
+    print(f"drew {num_drawn} cards in total")
