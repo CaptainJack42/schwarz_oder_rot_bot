@@ -8,6 +8,7 @@ A discord bot for playing the 'Schwarz oder Rot' drinking game
 
 ## Installing the bot (example on RPI)
 1. install python3.10 (on RPI it needs to be built from source)
-2. run `chmod +x discord_bot.sh` and `chmod +x main.py`
-3. install requirements (ideally with `python3.10 -m pip install -r requirements.txt`, if this doesn't work just manuall install `discord` and `python-dotenv` packages with pip)
-4. run the start script with `./discord_bot.sh start` (stop the bot with `./discord_bot.sh stop`).
+2. update the path to the `main.py` file in the `start_bot.sh` script.
+3. run `chmod +x discord_bot.sh` and `chmod +x main.py`
+4. install requirements (ideally with `python3.10 -m pip install -r requirements.txt`, if this doesn't work just manuall install `discord` and `python-dotenv` packages with pip)
+5. run the start script with `./discord_bot.sh start` (stop the bot with `./discord_bot.sh stop`).
