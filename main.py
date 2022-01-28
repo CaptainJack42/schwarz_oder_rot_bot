@@ -26,7 +26,8 @@ class SoRMainClient(commands.Bot):
                                             'schwarz', 'rot', 'schwarzoderrot', 'schwarz oder rot', 'new', 'neu'], pass_context=True)(self.create_game)
         self.start_sor_game = self.command(
             name='start', aliases=['go', 'play'], pass_context=True)(self.start_game)
-        self.stop_sor_game = self.command(name='stop', pass_context=True)(self.stop_game)
+        self.stop_sor_game = self.command(
+            name='stop', pass_context=True)(self.stop_game)
 
     async def on_ready(self):
         guilds = discord.utils.get(self.guilds)
@@ -56,7 +57,7 @@ class SoRMainClient(commands.Bot):
         self.init_msg_id = None
         await self.game.run()
         self.game = None
-        
+
     async def stop_game(self, ctx: commands.Context = None):
         self.game = None
         if ctx == None:
@@ -167,7 +168,7 @@ class SoRGame:
 
             card: card_deck.Card = self.deck.draw_card()
 
-            msg = f'{player.mention} deine Karte ist die **{self.deck.CARD_VALUE_MAP.get(card.value)} of {card.color._name_}**.'
+            msg = f'{player.mention} \ndeine Karte ist die **{self.deck.CARD_VALUE_MAP.get(card.value)} of {card.color._name_}**.'
 
             if await self.parse_phase_1(card, reaction):
                 msg += '\n Das ist **richtig!** Wähle jemanden aus der trinkt!'
@@ -201,7 +202,7 @@ class SoRGame:
 
             card: card_deck.Card = self.deck.draw_card()
 
-            msg = f'{player.mention} deine Karte ist die **{self.deck.CARD_VALUE_MAP.get(card.value)} of {card.color._name_}**.'
+            msg = f'{player.mention} \ndeine Karte ist die **{self.deck.CARD_VALUE_MAP.get(card.value)} of {card.color._name_}**.'
 
             if await self.parse_phase_2(card, self.player_cards[idx], reaction):
                 msg += '\n Das ist **richtig!** Wähle jemanden aus der trinkt!'
@@ -242,8 +243,8 @@ class SoRGame:
 
             card: card_deck.Card = self.deck.draw_card()
 
-            msg = f'{player.mention} deine Karte ist die **{self.deck.CARD_VALUE_MAP.get(card.value)} of {card.color._name_}**.'
-            
+            msg = f'{player.mention} \ndeine Karte ist die **{self.deck.CARD_VALUE_MAP.get(card.value)} of {card.color._name_}**.'
+
             if await self.parse_phase_3(card, self.player_cards[idx], reaction):
                 msg += '\n Das ist **richtig!** Wähle jemanden aus der trinkt!'
             else:
@@ -283,8 +284,8 @@ class SoRGame:
 
             card: card_deck.Card = self.deck.draw_card()
 
-            msg = f'{player.mention} deine Karte ist die **{self.deck.CARD_VALUE_MAP.get(card.value)} of {card.color._name_}**.'
-            
+            msg = f'{player.mention} \ndeine Karte ist die **{self.deck.CARD_VALUE_MAP.get(card.value)} of {card.color._name_}**.'
+
             if await self.parse_phase_4(card, self.player_cards[idx], reaction):
                 msg += '\n Das ist **richtig!** Wähle jemanden aus der trinkt!'
             else:
@@ -292,7 +293,7 @@ class SoRGame:
 
             self.player_cards[idx].append(card)
             await self.client.send_msg(msg)
-            
+
     async def parse_phase_4(self, card: card_deck.Card, prev_cards: list[card_deck.Card], reaction: str) -> bool:
         if reaction == '✅':
             for c in prev_cards:
@@ -304,6 +305,7 @@ class SoRGame:
                 if card.color == c.color:
                     return False
             return True
+
 
 if __name__ == '__main__':
     bot = SoRMainClient(command_prefix='!', description='!SchwarzOderRot')
