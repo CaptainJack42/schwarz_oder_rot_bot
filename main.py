@@ -9,7 +9,7 @@ import logging
 import res.card_deck as card_deck
 
 load_dotenv()
-API_TOKEN = os.environ.get('API_TOKEN')
+API_TOKEN = os.environ.get('TEST_API_TOKEN')
 
 
 class SoRMainClient(commands.Bot):
@@ -28,7 +28,8 @@ class SoRMainClient(commands.Bot):
             name='start', aliases=['go', 'play'], pass_context=True)(self.start_game)
         self.stop_sor_game = self.command(
             name='stop', pass_context=True)(self.stop_game)
-        self.source = self.command(name='source', aliases=['code', 'sourcecode', 'github'], pass_context=True)(self.source_code)
+        self.source = self.command(name='source', aliases=[
+                                   'code', 'sourcecode', 'github'], pass_context=True)(self.source_code)
 
     async def on_ready(self):
         guilds = discord.utils.get(self.guilds)
@@ -79,8 +80,12 @@ class SoRMainClient(commands.Bot):
             user = await self.fetch_user(payload.user_id)
 
         await self.game.add_player(user)
+        channel = self.get_channel(payload.channel_id)
+        if channel == None:
+            channel = self.fetch_channel(payload.channel_id)
+        await channel.send(f'{user.mention} ist dem Spiel beigetreten')
         self.logger.debug(f'{user} joined the game')
-        
+
     async def source_code(self, ctx: commands.Context):
         await ctx.reply('The source code for this bot is available at: https://github.com/CaptainJack42/schwarz_oder_rot_bot .\nFeel free to submit feature requests or pull requests there.', mention_author=True)
 
@@ -292,7 +297,7 @@ class SoRGame:
             card: card_deck.Card = self.deck.draw_card()
 
             msg = f'{player.mention} \ndeine Karte ist die **{self.deck.CARD_VALUE_MAP.get(card.value)}:{card.color._name_.lower()}: ({self.deck.CARD_VALUE_MAP.get(card.value)} of {card.color._name_})**.'
-            
+
             if await self.parse_phase_4(card, self.player_cards[idx], reaction):
                 msg += '\nDas ist **richtig!** Wähle jemanden aus der trinkt!'
             else:
