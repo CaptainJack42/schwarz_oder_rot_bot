@@ -9,7 +9,7 @@ import logging
 import res.card_deck as card_deck
 
 load_dotenv()
-API_TOKEN = os.environ.get('API_TOKEN')
+API_TOKEN = os.environ.get('TEST_API_TOKEN')
 
 
 class SoRMainClient(commands.Bot):
