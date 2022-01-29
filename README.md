@@ -21,4 +21,5 @@ A discord bot for playing the 'Schwarz oder Rot' drinking game
 
 - [ ] switch from old unmaintained [discord.py](https://github.com/Rapptz/discord.py) to [enhanced-dpy](https://github.com/iDevision/enhanced-discord.py). -> will probably also mean rolling back to python 3.9
 - [ ] Add support to play the pyramid game.
-- [ ] Improve Coding Style.
+- [ ] Improve Coding Style
+- [ ] add comments to the code (maybe)
