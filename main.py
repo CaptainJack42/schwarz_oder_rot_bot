@@ -9,7 +9,7 @@ import logging
 import res.card_deck as card_deck
 
 load_dotenv()
-API_TOKEN = os.environ.get('TEST_API_TOKEN')
+API_TOKEN = os.environ.get('API_TOKEN')
 
 
 class SoRMainClient(commands.Bot):
@@ -28,6 +28,7 @@ class SoRMainClient(commands.Bot):
             name='start', aliases=['go', 'play'], pass_context=True)(self.start_game)
         self.stop_sor_game = self.command(
             name='stop', pass_context=True)(self.stop_game)
+        self.source = self.command(name='source', aliases=['code', 'sourcecode', 'github'], pass_context=True)(self.source_code)
 
     async def on_ready(self):
         guilds = discord.utils.get(self.guilds)
@@ -79,6 +80,9 @@ class SoRMainClient(commands.Bot):
 
         await self.game.add_player(user)
         self.logger.debug(f'{user} joined the game')
+        
+    async def source_code(self, ctx: commands.Context):
+        await ctx.reply('The source code for this bot is available at: https://github.com/CaptainJack42/schwarz_oder_rot_bot .\nFeel free to submit feature requests or pull requests there.', mention_author=True)
 
     async def send_msg_and_await_reaction(self, msg: str, curr_player: discord.User, possible_reacts: list[str]):
         message: discord.Message = await self.game_channel.send(msg)
