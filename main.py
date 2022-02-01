@@ -217,8 +217,6 @@ class SoRGame:
             else:
                 return False
 
-
-
     async def phase_2(self):
         for (idx, player) in enumerate(self.players):
             msg = f"{player.mention} \n{self.MESSAGES_MAP.get(1)} \ndeine vorherige Karte war: **{card_deck.CardDeck.CARD_VALUE_MAP.get(self.player_cards[idx][0].value)}:{self.player_cards[idx][0].color._name_.lower()}: ({self.deck.CARD_VALUE_MAP.get(self.player_cards[idx][0].value)} of {self.player_cards[idx][0].color._name_})**"
