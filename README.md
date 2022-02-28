@@ -2,6 +2,10 @@
 
 A discord bot for playing the 'Schwarz oder Rot' drinking game
 
+# This Repository is no longer maintained
+
+The bot was moved to [here](https://github.com/CaptainJack42/discord_bot_collection)
+
 ## Usage
 
 ### Adding the API Token
